@@ -9,9 +9,8 @@ import {
   CheckCircle, 
   MessageSquare, 
   Users, 
-  Phone,
-  Clock,
-  Target
+  Target,
+  Clock
 } from 'lucide-react';
 import MetricsCard from '@/components/dashboard/MetricsCard';
 import WeeklyActivityChart from '@/components/dashboard/WeeklyActivityChart';
@@ -160,12 +159,23 @@ const AgentDashboard = () => {
           />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          <WeeklyActivityChart data={conversationData} chartConfig={chartConfig} />
-          <ConversionFunnelChart data={conversionData} />
+        {/* Gráficos - Layout responsivo melhorado */}
+        <div className="space-y-8 mb-8">
+          {/* Primeira linha - gráficos de atividade e funil */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+            <div className="min-h-[400px]">
+              <WeeklyActivityChart data={conversationData} chartConfig={chartConfig} />
+            </div>
+            <div className="min-h-[400px]">
+              <ConversionFunnelChart data={conversionData} />
+            </div>
+          </div>
+          
+          {/* Segunda linha - gráfico de tempo de resposta */}
+          <div className="w-full">
+            <ResponseTimeChart data={responseTimeData} />
+          </div>
         </div>
-
-        <ResponseTimeChart data={responseTimeData} />
 
         <InsightsSection />
       </div>
