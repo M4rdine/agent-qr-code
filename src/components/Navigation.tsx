@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
   Bot, 
-  Home, 
+  Users2, 
   Users, 
   Zap, 
   QrCode, 
@@ -17,25 +17,11 @@ import {
 
 const navigationItems = [
   {
-    id: 'home',
-    label: 'Início',
+    id: 'agents',
+    label: 'Agentes',
     href: '/',
-    icon: Home,
-    description: 'Templates de agentes'
-  },
-  {
-    id: 'setup',
-    label: 'Configuração',
-    href: '/setup',
-    icon: Settings,
-    description: 'Setup do agente'
-  },
-  {
-    id: 'qrcode',
-    label: 'QR Code',
-    href: '/qrcode',
-    icon: QrCode,
-    description: 'Integração WhatsApp'
+    icon: Users2,
+    description: 'Gerenciar agentes de IA'
   },
   {
     id: 'leads',
