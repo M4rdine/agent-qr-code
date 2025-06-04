@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { ChartContainer } from '@/components/ui/chart';
 import { 
   ArrowLeft, 
   CheckCircle, 
@@ -17,7 +17,7 @@ import {
   BarChart3,
   Calendar
 } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, Tooltip } from 'recharts';
 
 const AgentDashboard = () => {
   const location = useLocation();
@@ -197,17 +197,15 @@ const AgentDashboard = () => {
             </CardHeader>
             <CardContent>
               <ChartContainer config={chartConfig} className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={conversationData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="day" />
-                    <YAxis />
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                    <Bar dataKey="conversations" fill="var(--color-conversations)" />
-                    <Bar dataKey="leads" fill="var(--color-leads)" />
-                    <Bar dataKey="sales" fill="var(--color-sales)" />
-                  </BarChart>
-                </ResponsiveContainer>
+                <BarChart data={conversationData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="day" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="conversations" fill="var(--color-conversations)" />
+                  <Bar dataKey="leads" fill="var(--color-leads)" />
+                  <Bar dataKey="sales" fill="var(--color-sales)" />
+                </BarChart>
               </ChartContainer>
             </CardContent>
           </Card>
@@ -240,7 +238,7 @@ const AgentDashboard = () => {
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
-                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Tooltip />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
@@ -273,21 +271,19 @@ const AgentDashboard = () => {
           </CardHeader>
           <CardContent>
             <ChartContainer config={{ avgTime: { label: "Tempo (segundos)", color: "#8b5cf6" } }} className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={responseTimeData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="hour" />
-                  <YAxis />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Line 
-                    type="monotone" 
-                    dataKey="avgTime" 
-                    stroke="#8b5cf6" 
-                    strokeWidth={3}
-                    dot={{ r: 4 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+              <LineChart data={responseTimeData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="hour" />
+                <YAxis />
+                <Tooltip />
+                <Line 
+                  type="monotone" 
+                  dataKey="avgTime" 
+                  stroke="#8b5cf6" 
+                  strokeWidth={3}
+                  dot={{ r: 4 }}
+                />
+              </LineChart>
             </ChartContainer>
           </CardContent>
         </Card>
