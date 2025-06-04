@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -197,15 +196,17 @@ const AgentDashboard = () => {
             </CardHeader>
             <CardContent>
               <ChartContainer config={chartConfig} className="h-64">
-                <BarChart data={conversationData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="day" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="conversations" fill="var(--color-conversations)" />
-                  <Bar dataKey="leads" fill="var(--color-leads)" />
-                  <Bar dataKey="sales" fill="var(--color-sales)" />
-                </BarChart>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={conversationData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="day" />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar dataKey="conversations" fill="var(--color-conversations)" />
+                    <Bar dataKey="leads" fill="var(--color-leads)" />
+                    <Bar dataKey="sales" fill="var(--color-sales)" />
+                  </BarChart>
+                </ResponsiveContainer>
               </ChartContainer>
             </CardContent>
           </Card>
@@ -271,19 +272,21 @@ const AgentDashboard = () => {
           </CardHeader>
           <CardContent>
             <ChartContainer config={{ avgTime: { label: "Tempo (segundos)", color: "#8b5cf6" } }} className="h-64">
-              <LineChart data={responseTimeData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="hour" />
-                <YAxis />
-                <Tooltip />
-                <Line 
-                  type="monotone" 
-                  dataKey="avgTime" 
-                  stroke="#8b5cf6" 
-                  strokeWidth={3}
-                  dot={{ r: 4 }}
-                />
-              </LineChart>
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={responseTimeData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="hour" />
+                  <YAxis />
+                  <Tooltip />
+                  <Line 
+                    type="monotone" 
+                    dataKey="avgTime" 
+                    stroke="#8b5cf6" 
+                    strokeWidth={3}
+                    dot={{ r: 4 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
             </ChartContainer>
           </CardContent>
         </Card>
