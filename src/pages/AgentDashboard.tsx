@@ -1,22 +1,23 @@
-import { useEffect, useState } from 'react';
+
+import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ChartContainer } from '@/components/ui/chart';
 import { 
   ArrowLeft, 
   CheckCircle, 
   MessageSquare, 
   Users, 
-  TrendingUp, 
   Phone,
   Clock,
-  Target,
-  BarChart3,
-  Calendar
+  Target
 } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, Tooltip } from 'recharts';
+import MetricsCard from '@/components/dashboard/MetricsCard';
+import WeeklyActivityChart from '@/components/dashboard/WeeklyActivityChart';
+import ConversionFunnelChart from '@/components/dashboard/ConversionFunnelChart';
+import ResponseTimeChart from '@/components/dashboard/ResponseTimeChart';
+import InsightsSection from '@/components/dashboard/InsightsSection';
 
 const AgentDashboard = () => {
   const location = useLocation();
@@ -129,214 +130,44 @@ const AgentDashboard = () => {
 
         {/* Métricas Principais */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total de Conversas</CardTitle>
-              <MessageSquare className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">312</div>
-              <p className="text-xs text-muted-foreground">
-                <span className="text-emerald-600">+12%</span> desde a semana passada
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Leads Gerados</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">91</div>
-              <p className="text-xs text-muted-foreground">
-                <span className="text-emerald-600">+8%</span> desde a semana passada
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Taxa de Conversão</CardTitle>
-              <Target className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">26.4%</div>
-              <p className="text-xs text-muted-foreground">
-                <span className="text-emerald-600">+3.2%</span> desde a semana passada
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Tempo Médio de Resposta</CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">2.3s</div>
-              <p className="text-xs text-muted-foreground">
-                <span className="text-red-600">+0.3s</span> desde a semana passada
-              </p>
-            </CardContent>
-          </Card>
+          <MetricsCard
+            title="Total de Conversas"
+            value={312}
+            change="+12%"
+            changeType="positive"
+            icon={MessageSquare}
+          />
+          <MetricsCard
+            title="Leads Gerados"
+            value={91}
+            change="+8%"
+            changeType="positive"
+            icon={Users}
+          />
+          <MetricsCard
+            title="Taxa de Conversão"
+            value="26.4%"
+            change="+3.2%"
+            changeType="positive"
+            icon={Target}
+          />
+          <MetricsCard
+            title="Tempo Médio de Resposta"
+            value="2.3s"
+            change="+0.3s"
+            changeType="negative"
+            icon={Clock}
+          />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          {/* Gráfico de Conversas */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <BarChart3 className="w-5 h-5" />
-                <span>Atividade Semanal</span>
-              </CardTitle>
-              <CardDescription>
-                Conversas, leads e vendas dos últimos 7 dias
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ChartContainer config={chartConfig} className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={conversationData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="day" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="conversations" fill="var(--color-conversations)" />
-                    <Bar dataKey="leads" fill="var(--color-leads)" />
-                    <Bar dataKey="sales" fill="var(--color-sales)" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartContainer>
-            </CardContent>
-          </Card>
-
-          {/* Gráfico de Funil de Conversão */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <TrendingUp className="w-5 h-5" />
-                <span>Funil de Conversão</span>
-              </CardTitle>
-              <CardDescription>
-                Status dos leads gerados pelo agente
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-64 flex items-center justify-center">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={conversionData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={100}
-                      paddingAngle={5}
-                      dataKey="value"
-                    >
-                      {conversionData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="grid grid-cols-2 gap-4 mt-4">
-                {conversionData.map((item, index) => (
-                  <div key={index} className="flex items-center space-x-2">
-                    <div 
-                      className="w-3 h-3 rounded-full" 
-                      style={{ backgroundColor: item.color }}
-                    />
-                    <span className="text-sm text-slate-600">{item.name}</span>
-                    <span className="text-sm font-medium">{item.value}</span>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          <WeeklyActivityChart data={conversationData} chartConfig={chartConfig} />
+          <ConversionFunnelChart data={conversionData} />
         </div>
 
-        {/* Tempo de Resposta */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Clock className="w-5 h-5" />
-              <span>Tempo de Resposta por Período</span>
-            </CardTitle>
-            <CardDescription>
-              Tempo médio de resposta do agente ao longo do dia
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer config={{ avgTime: { label: "Tempo (segundos)", color: "#8b5cf6" } }} className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={responseTimeData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="hour" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line 
-                    type="monotone" 
-                    dataKey="avgTime" 
-                    stroke="#8b5cf6" 
-                    strokeWidth={3}
-                    dot={{ r: 4 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </ChartContainer>
-          </CardContent>
-        </Card>
+        <ResponseTimeChart data={responseTimeData} />
 
-        {/* Insights Recentes */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Calendar className="w-5 h-5" />
-              <span>Insights Recentes</span>
-            </CardTitle>
-            <CardDescription>
-              Análises automáticas das conversas do seu agente
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-start space-x-3 p-4 bg-blue-50 rounded-lg">
-              <TrendingUp className="w-5 h-5 text-blue-600 mt-1" />
-              <div>
-                <h4 className="font-medium text-blue-900">Pico de Atividade</h4>
-                <p className="text-sm text-blue-700">
-                  Quinta-feira apresentou 40% mais conversas que a média semanal. 
-                  Considere ajustar a disponibilidade do agente.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start space-x-3 p-4 bg-emerald-50 rounded-lg">
-              <Target className="w-5 h-5 text-emerald-600 mt-1" />
-              <div>
-                <h4 className="font-medium text-emerald-900">Alta Taxa de Conversão</h4>
-                <p className="text-sm text-emerald-700">
-                  Leads que mencionam "desconto" têm 67% mais chances de conversão.
-                  O agente está identificando essas oportunidades corretamente.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start space-x-3 p-4 bg-amber-50 rounded-lg">
-              <Clock className="w-5 h-5 text-amber-600 mt-1" />
-              <div>
-                <h4 className="font-medium text-amber-900">Oportunidade de Melhoria</h4>
-                <p className="text-sm text-amber-700">
-                  15% das conversas são abandonadas após a primeira resposta. 
-                  Considere ajustar a abordagem inicial do agente.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <InsightsSection />
       </div>
     </div>
   );
