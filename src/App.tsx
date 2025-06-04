@@ -9,6 +9,7 @@ import Agents from "./pages/Agents";
 import CreateAgent from "./pages/CreateAgent";
 import Setup from "./pages/Setup";
 import QRCode from "./pages/QRCode";
+import AgentDashboard from "./pages/AgentDashboard";
 import Leads from "./pages/Leads";
 import Integrations from "./pages/Integrations";
 import NotFound from "./pages/NotFound";
@@ -29,6 +30,7 @@ const App = () => (
               <Route path="/create-agent" element={<CreateAgent />} />
               <Route path="/setup" element={<Setup />} />
               <Route path="/qrcode" element={<QRCode />} />
+              <Route path="/agent-dashboard" element={<AgentDashboard />} />
               <Route path="/leads" element={<Leads />} />
               <Route path="/integrations" element={<Integrations />} />
               <Route path="*" element={<NotFound />} />

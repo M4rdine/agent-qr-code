@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -71,6 +70,10 @@ const QRCode = () => {
       title: "Conexão estabelecida!",
       description: "Seu agente foi conectado com sucesso ao WhatsApp.",
     });
+  };
+
+  const goToDashboard = () => {
+    navigate('/agent-dashboard', { state: agentData });
   };
 
   return (
@@ -185,6 +188,18 @@ const QRCode = () => {
                       >
                         <Smartphone className="w-4 h-4 mr-2" />
                         Simular Conexão (Demo)
+                      </Button>
+                    )}
+
+                    {/* Botão para ir ao dashboard quando conectado */}
+                    {isConnected && (
+                      <Button
+                        onClick={goToDashboard}
+                        variant="default"
+                        className="bg-emerald-500 hover:bg-emerald-600"
+                      >
+                        <CheckCircle className="w-4 h-4 mr-2" />
+                        Ver Dashboard do Agente
                       </Button>
                     )}
                   </div>
