@@ -127,7 +127,7 @@ const Agents = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-emerald-600">
-                {data?.filter(agent => agent?.status === 'connected').length}
+                {Array.isArray(data) ? data.filter(agent => agent?.status === 'connected').length : 0}
               </div>
             </CardContent>
           </Card>
@@ -138,7 +138,7 @@ const Agents = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-red-600">
-                {data?.filter(agent => agent?.status === 'disconnected')?.length}
+                {Array.isArray(data) ? data.filter(agent => agent?.status === 'disconnected').length : 0}
               </div>
             </CardContent>
           </Card>
