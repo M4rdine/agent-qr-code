@@ -16,7 +16,7 @@ interface AgentTemplate {
   popular?: boolean;
 }
 
-const agentTemplates: AgentTemplate[] = [
+export const agentTemplates: AgentTemplate[] = [
   {
     id: 'vendas',
     title: 'Agente de Vendas',

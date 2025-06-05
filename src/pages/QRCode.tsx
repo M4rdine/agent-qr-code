@@ -5,24 +5,48 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Copy, Download, RefreshCw, MessageSquare, ArrowLeft, CheckCircle, Smartphone } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useQueryFindQRCode } from '@/services/agents/generate-qrcode';
+import AgentDashboard from '@/components/agent-dashboard';
 
 const QRCode = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const queryParams = new URLSearchParams(location.search);
+  const instanceName = queryParams.get('instanceName');  const agentData = location.state;
+  console.log(instanceName);
   const [qrCodeUrl, setQrCodeUrl] = useState('');
   const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const { mutate: generateQRCode } = useQueryFindQRCode();
 
-  const agentData = location.state;
+  const fetchQRCode = () => {
+    setIsLoading(true);
+    setIsConnected(false);
+
+    generateQRCode(instanceName, {
+      onSuccess: (data) => {
+        const imageUrl = `${data.base64}`;
+        setQrCodeUrl(imageUrl);
+        setIsLoading(false);
+        console.log(data);
+        if(data?.instance?.state === "open") {
+          setIsConnected(true);
+        }
+      },
+      onError: () => {
+        toast({
+          title: "Erro ao gerar QR Code",
+          description: "Não foi possível se conectar com o servidor.",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+      }
+    });
+  };
 
   useEffect(() => {
-    // Simular geração do QR Code
-    setTimeout(() => {
-      // URL fictícia do QR Code - em produção viria do backend
-      setQrCodeUrl('https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://wa.me/message/ABCDEFGHIJKLMNOP');
-      setIsLoading(false);
-    }, 2000);
+    fetchQRCode();
   }, []);
 
   const handleCopyQR = async () => {
@@ -42,26 +66,15 @@ const QRCode = () => {
   };
 
   const handleDownloadQR = () => {
-    // Simular download do QR Code
     const link = document.createElement('a');
     link.href = qrCodeUrl;
     link.download = 'whatsapp-agent-qr.png';
     link.click();
-    
+
     toast({
       title: "Download iniciado",
       description: "O QR Code está sendo baixado."
     });
-  };
-
-  const handleGenerateNew = () => {
-    setIsLoading(true);
-    setIsConnected(false);
-    // Simular nova geração
-    setTimeout(() => {
-      setQrCodeUrl('https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://wa.me/message/' + Math.random().toString(36).substring(7));
-      setIsLoading(false);
-    }, 2000);
   };
 
   const simulateConnection = () => {
@@ -78,17 +91,11 @@ const QRCode = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-      {/* Header */}
       <div className="bg-white/80 backdrop-blur-sm border-b border-slate-200">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate(-1)}
-                className="hover:bg-slate-100"
-              >
+              <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="hover:bg-slate-100">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Voltar
               </Button>
@@ -113,15 +120,15 @@ const QRCode = () => {
       </div>
 
       <div className="container mx-auto px-6 py-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="mx-auto">
+          {!isConnected && <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* QR Code Card */}
             <Card className="h-fit">
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl text-slate-900">QR Code do Agente</CardTitle>
                 <CardDescription>
                   Escaneie o código para conectar seu agente ao WhatsApp
-                </CardDescription>
+                </CardDescription>e
               </CardHeader>
               <CardContent className="text-center space-y-6">
                 <div className="flex justify-center">
@@ -151,102 +158,54 @@ const QRCode = () => {
                 {!isLoading && (
                   <div className="flex flex-col space-y-3">
                     <div className="flex space-x-3">
-                      <Button
-                        onClick={handleCopyQR}
-                        variant="outline"
-                        className="flex-1"
-                      >
+                      <Button onClick={handleCopyQR} variant="outline" className="flex-1">
                         <Copy className="w-4 h-4 mr-2" />
                         Copiar Link
                       </Button>
-                      <Button
-                        onClick={handleDownloadQR}
-                        variant="outline"
-                        className="flex-1"
-                      >
+                      <Button onClick={handleDownloadQR} variant="outline" className="flex-1">
                         <Download className="w-4 h-4 mr-2" />
                         Baixar
                       </Button>
                     </div>
-                    
-                    <Button
-                      onClick={handleGenerateNew}
-                      variant="ghost"
-                      size="sm"
-                      className="text-slate-600"
-                    >
+
+                    <Button onClick={fetchQRCode} variant="ghost" size="sm" className="text-slate-600">
                       <RefreshCw className="w-4 h-4 mr-2" />
                       Gerar Novo QR Code
                     </Button>
-
-                    {/* Simular conexão para demo */}
-                    {!isConnected && (
-                      <Button
-                        onClick={simulateConnection}
-                        variant="default"
-                        className="bg-whatsapp-primary hover:bg-whatsapp-dark"
-                      >
-                        <Smartphone className="w-4 h-4 mr-2" />
-                        Simular Conexão (Demo)
-                      </Button>
-                    )}
-
-                    {/* Botão para ir ao dashboard quando conectado */}
-                    {isConnected && (
-                      <Button
-                        onClick={goToDashboard}
-                        variant="default"
-                        className="bg-emerald-500 hover:bg-emerald-600"
-                      >
-                        <CheckCircle className="w-4 h-4 mr-2" />
-                        Ver Dashboard do Agente
-                      </Button>
-                    )}
                   </div>
                 )}
               </CardContent>
             </Card>
 
-            {/* Instruções */}
+            {/* Instruções e resumo */}
             <div className="space-y-6">
               <Card>
                 <CardHeader>
                   <CardTitle className="text-xl text-slate-900">Como Conectar</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="flex items-start space-x-3">
-                    <div className="w-6 h-6 bg-whatsapp-primary text-white rounded-full flex items-center justify-center text-sm font-bold">
-                      1
+                  {[1, 2, 3].map((step, i) => (
+                    <div key={step} className="flex items-start space-x-3">
+                      <div className="w-6 h-6 bg-whatsapp-primary text-white rounded-full flex items-center justify-center text-sm font-bold">
+                        {step}
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-slate-900">
+                          {["Abra o WhatsApp", "Escaneie o QR Code", "Confirme a Conexão"][i]}
+                        </h4>
+                        <p className="text-sm text-slate-600">
+                          {[
+                            "No seu celular, abra o aplicativo WhatsApp",
+                            "Use a câmera do WhatsApp para escanear o código acima",
+                            "Autorize a integração e seu agente estará ativo"
+                          ][i]}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="font-medium text-slate-900">Abra o WhatsApp</h4>
-                      <p className="text-sm text-slate-600">No seu celular, abra o aplicativo WhatsApp</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start space-x-3">
-                    <div className="w-6 h-6 bg-whatsapp-primary text-white rounded-full flex items-center justify-center text-sm font-bold">
-                      2
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-slate-900">Escaneie o QR Code</h4>
-                      <p className="text-sm text-slate-600">Use a câmera do WhatsApp para escanear o código acima</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start space-x-3">
-                    <div className="w-6 h-6 bg-whatsapp-primary text-white rounded-full flex items-center justify-center text-sm font-bold">
-                      3
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-slate-900">Confirme a Conexão</h4>
-                      <p className="text-sm text-slate-600">Autorize a integração e seu agente estará ativo</p>
-                    </div>
-                  </div>
+                  ))}
                 </CardContent>
               </Card>
 
-              {/* Resumo da Configuração */}
               <Card>
                 <CardHeader>
                   <CardTitle className="text-xl text-slate-900">Resumo da Configuração</CardTitle>
@@ -262,13 +221,11 @@ const QRCode = () => {
                       ))}
                     </div>
                   </div>
-                  
+
                   {agentData?.config?.context && (
                     <div>
                       <h4 className="font-medium text-slate-900 mb-1">Contexto:</h4>
-                      <p className="text-sm text-slate-600 line-clamp-3">
-                        {agentData.config.context}
-                      </p>
+                      <p className="text-sm text-slate-600 line-clamp-3">{agentData.config.context}</p>
                     </div>
                   )}
 
@@ -283,23 +240,10 @@ const QRCode = () => {
                 </CardContent>
               </Card>
             </div>
-          </div>
+          </div>}
 
-          {/* Status de Conexão */}
           {isConnected && (
-            <Card className="mt-8 border-emerald-200 bg-emerald-50">
-              <CardContent className="py-6">
-                <div className="flex items-center justify-center space-x-3">
-                  <CheckCircle className="w-6 h-6 text-emerald-600" />
-                  <div className="text-center">
-                    <h3 className="font-medium text-emerald-900">Agente Conectado com Sucesso!</h3>
-                    <p className="text-sm text-emerald-700">
-                      Seu agente de IA está ativo e pronto para atender no WhatsApp
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <AgentDashboard />
           )}
         </div>
       </div>

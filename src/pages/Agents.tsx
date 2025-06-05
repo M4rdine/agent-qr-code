@@ -1,11 +1,12 @@
 
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Bot, Plus, Settings, QrCode, Eye, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useQueryAgentsList } from '@/services/agents/find-all-agents';
+import { agentTemplates } from './CreateAgent';
 
 interface Agent {
   id: string;
@@ -19,11 +20,11 @@ interface Agent {
 const mockAgents: Agent[] = [
   {
     id: '1',
-    name: 'Agente de Vendas Principal',
+    name: '',
     template: 'Agente de Vendas',
     status: 'connected',
     createdAt: '2024-01-15',
-    description: 'Especializado em conversão e fechamento de negócios'
+    description: ''
   },
   {
     id: '2',
@@ -42,14 +43,34 @@ const mockAgents: Agent[] = [
     description: 'Prospecção ativa e qualificação de leads'
   }
 ];
+  const getAgentName = (template: string) => {
+    const a = agentTemplates.map((item) => {
+      if(template === item.id) {
+        return item.title;
+      }
+    })
+    return a;
+  }
 
+  const getAgentDescription = (template: string) => {
+    console.log(template);
+    const a = agentTemplates.map((item) => {
+      if(template === item.id) {
+        return item.description;
+      }
+    })
+    return a;
+  }
 const Agents = () => {
-  const [agents] = useState<Agent[]>(mockAgents);
   const navigate = useNavigate();
 
   const handleCreateAgent = () => {
     navigate('/create-agent');
   };
+
+  const { data } = useQueryAgentsList();
+
+  console.log(data, "data");
 
   const getStatusColor = (status: string) => {
     return status === 'connected' 
@@ -96,7 +117,7 @@ const Agents = () => {
               <CardTitle className="text-sm font-medium text-slate-600">Total de Agentes</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-slate-900">{agents.length}</div>
+              <div className="text-2xl font-bold text-slate-900">{data?.length}</div>
             </CardContent>
           </Card>
           
@@ -106,7 +127,7 @@ const Agents = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-emerald-600">
-                {agents.filter(agent => agent.status === 'connected').length}
+                {data?.filter(agent => agent?.status === 'connected').length}
               </div>
             </CardContent>
           </Card>
@@ -117,7 +138,7 @@ const Agents = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-red-600">
-                {agents.filter(agent => agent.status === 'disconnected').length}
+                {data?.filter(agent => agent?.status === 'disconnected')?.length}
               </div>
             </CardContent>
           </Card>
@@ -143,12 +164,12 @@ const Agents = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {agents.map((agent) => (
-                  <TableRow key={agent.id}>
+                {data?.map((agent) => (
+                  <TableRow key={agent?.id}>
                     <TableCell>
                       <div>
-                        <div className="font-medium text-slate-900">{agent.name}</div>
-                        <div className="text-sm text-slate-500">{agent.description}</div>
+                        <div className="font-medium text-slate-900">{getAgentName(agent?.template as string)}</div>
+                        <div className="text-sm text-slate-500">{getAgentDescription(agent?.template as string)}</div>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -165,12 +186,9 @@ const Agents = () => {
                     <TableCell>
                       <div className="flex items-center space-x-2">
                         <Button variant="ghost" size="sm">
-                          <Eye className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm">
                           <Settings className="w-4 h-4" />
                         </Button>
-                        <Button variant="ghost" size="sm">
+                        <Button variant="ghost" size="sm" onClick={() => navigate("/qrcode?instanceName=Mock")}>
                           <QrCode className="w-4 h-4" />
                         </Button>
                         <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">

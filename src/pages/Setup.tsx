@@ -7,9 +7,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import { Plus, Trash2, MessageSquare, ArrowLeft, Save } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useAgentsCreate } from '@/services/agents/create-agent';
 
 interface QAItem {
   id: string;
@@ -17,12 +17,17 @@ interface QAItem {
   answer: string;
 }
 
+const generateInstanceName = (template: string) => {
+  const slug = template.toLowerCase().replace(/\s+/g, '-');
+  const random = Math.random().toString(36).substring(2, 8);
+  return `${slug}-${random}`;
+}
+
 const Setup = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
   const selectedTemplates = location.state?.selectedTemplates || [];
-
   const [formData, setFormData] = useState({
     context: '',
     trainingMaterials: '',
@@ -59,6 +64,8 @@ const Setup = () => {
     ));
   };
 
+  const { mutate } = useAgentsCreate();
+
   const handleSubmit = () => {
     // Validação básica
     if (!formData.context.trim()) {
@@ -79,14 +86,33 @@ const Setup = () => {
       return;
     }
 
-    // Navegar para a página do QR Code
-    navigate('/qrcode', { 
-      state: { 
-        selectedTemplates, 
-        config: formData, 
-        qaItems: qaItems.filter(item => item.question.trim() && item.answer.trim())
-      } 
-    });
+    const instanceName = generateInstanceName(selectedTemplates[0])
+    mutate({
+      additionalContext: formData?.context,
+      additionalMatherial: formData?.trainingMaterials,
+      agentAnswers: formData?.responseStyle,
+      agentFeeling: formData?.behavior,
+      instanceName: instanceName,
+      status: "connected",
+      template: selectedTemplates[0] || "vendas",
+    }, {
+      onSuccess: () => {
+        navigate(`/qrcode?instanceName=${instanceName}`, { 
+          state: { 
+            selectedTemplates, 
+            config: formData, 
+            qaItems: qaItems.filter(item => item.question.trim() && item.answer.trim())
+          } 
+        });
+      },
+      onError: () => {
+      toast({
+        title: "Erro ao criar agente!", 
+        description: "Ocorreu um erro interno ao tentar criar este agente.",
+        variant: "destructive"
+      });
+      }
+    })
   };
 
   return (
