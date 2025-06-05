@@ -44,9 +44,9 @@ const mockAgents: Agent[] = [
   }
 ];
   const getAgentName = (template: string) => {
-    const a = agentTemplates.map((item) => {
-      if(template === item.id) {
-        return item.title;
+    const a = agentTemplates?.map((item) => {
+      if(template === item?.id) {
+        return item?.title;
       }
     })
     return a;
@@ -54,9 +54,9 @@ const mockAgents: Agent[] = [
 
   const getAgentDescription = (template: string) => {
     console.log(template);
-    const a = agentTemplates.map((item) => {
-      if(template === item.id) {
-        return item.description;
+    const a = agentTemplates?.map((item) => {
+      if(template === item?.id) {
+        return item?.description;
       }
     })
     return a;
@@ -164,7 +164,7 @@ const Agents = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data?.map((agent) => (
+                {Array.isArray(data) ? data?.map((agent) => (
                   <TableRow key={agent?.id}>
                     <TableCell>
                       <div>
@@ -197,7 +197,7 @@ const Agents = () => {
                       </div>
                     </TableCell>
                   </TableRow>
-                ))}
+                )) : ( <hr /> )}
               </TableBody>
             </Table>
           </CardContent>
