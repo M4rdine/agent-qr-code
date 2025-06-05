@@ -7,6 +7,6 @@ const headers = {
 };
 
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: "https://6e34-2804-2fa4-90b5-fd00-495e-f8ee-70f9-a827.ngrok-free.app",
   headers,
 });
