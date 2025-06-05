@@ -188,7 +188,7 @@ const Agents = () => {
                         <Button variant="ghost" size="sm">
                           <Settings className="w-4 h-4" />
                         </Button>
-                        <Button variant="ghost" size="sm" onClick={() => navigate("/qrcode?instanceName=Mock")}>
+                        <Button variant="ghost" size="sm" onClick={() => navigate(`/qrcode?instanceName=${agent?.instanceName}`)}>
                           <QrCode className="w-4 h-4" />
                         </Button>
                         <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">
