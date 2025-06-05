@@ -7,6 +7,6 @@ const headers = {
 };
 
 export const api = axios.create({
-  baseURL: "https://travel-avoid-uses-rob.trycloudflare.com",
+  baseURL: "https://communist-showed-consist-chemistry.trycloudflare.com",
   headers,
 });
